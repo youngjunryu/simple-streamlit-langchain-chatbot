@@ -17,7 +17,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.chat_message_histories import ChatMessageHistory
 
-from config import answer_examples
+from config import answer_examples, dictionary
 
 load_dotenv()
 
@@ -72,7 +72,6 @@ def get_dictionary_chain():
     - 내부 사전을 참고해서 질문을 치환하거나
     - 변경할 필요가 없으면 원문을 그대로 반환.
     """
-    dictionary = ["사람을 나타내는 표현 -> 거주자"]
     llm = get_llm()
 
     prompt = ChatPromptTemplate.from_template(

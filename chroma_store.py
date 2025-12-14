@@ -111,9 +111,9 @@ def index_pdfs(
     chunk_overlap: int = 150,
 ) -> int:
     """
-    폴더 내 PDF들을:
-      PDF -> Markdown docs -> (선택) Markdown 청킹 -> Chroma 저장
-    반환: 저장된 총 청크 수
+    # 폴더 내 PDF들을:
+    #   PDF -> Markdown docs -> (선택) Markdown 청킹 -> Chroma 저장
+    # 반환: 저장된 총 청크 수
     """
     pdf_paths = sorted(Path(pdf_dir).glob(glob_pattern))
     if not pdf_paths:
