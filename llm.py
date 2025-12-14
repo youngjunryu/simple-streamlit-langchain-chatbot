@@ -24,8 +24,8 @@ load_dotenv()
 # -----------------------------
 # Storage config
 # -----------------------------
-PERSIST_DIR = str("./chroma_openai")
-COLLECTION_NAME = str("housing_subscription_system_docs")
+PERSIST_DIR = "./chroma_openai"
+COLLECTION_NAME = "housing_subscription_system_docs"
 
 # 세션별 대화 히스토리 메모리
 _store: Dict[str, ChatMessageHistory] = {}
@@ -40,7 +40,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 # -----------------------------
 # LLM / Embeddings
 # -----------------------------
-def get_llm(model: str = "gpt-4o") -> ChatOpenAI:
+def get_llm(model: str = "gpt-5.1") -> ChatOpenAI:
     return ChatOpenAI(model=model, temperature=0)
 
 
