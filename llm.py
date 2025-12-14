@@ -24,8 +24,8 @@ load_dotenv()
 # -----------------------------
 # Storage config
 # -----------------------------
-PERSIST_DIR = "./chroma_openai"
-COLLECTION_NAME = "housing_subscription_system_docs"
+PERSIST_DIR = str("./chroma_openai")
+COLLECTION_NAME = str("housing_subscription_system_docs")
 
 # 세션별 대화 히스토리 메모리
 _store: Dict[str, ChatMessageHistory] = {}

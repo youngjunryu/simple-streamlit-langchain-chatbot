@@ -1,3 +1,4 @@
+import traceback
 from dotenv import load_dotenv
 from pathlib import Path
 from typing import List
@@ -26,7 +27,7 @@ def get_embeddings() -> OpenAIEmbeddings:
     return OpenAIEmbeddings(model="text-embedding-3-large")
 
 
-def get_chroma(persist_dir: str, collection_name: str = "default") -> Chroma:
+def get_chroma(persist_dir: str, collection_name: str) -> Chroma:
     # 동일 persist_dir + collection_name 조합이면 기존 DB를 로드하고,  없으면 새로 생성됨.
     return Chroma(
         collection_name=collection_name,
@@ -87,7 +88,7 @@ def split_markdown_docs(
 def index_documents(
     persist_dir: str,
     docs: List[Document],
-    collection_name: str = "default",
+    collection_name: str,
 ) -> int:
     """
     Document 리스트를 Chroma에 저장(upsert/add).
@@ -127,7 +128,9 @@ def index_pdfs(
         )
         all_chunks.extend(chunks)
 
-    return index_documents(persist_dir, collection_name, all_chunks)
+    return index_documents(
+        persist_dir=persist_dir, collection_name=collection_name, docs=all_chunks
+    )
 
 
 def ensure_indexed_once(
@@ -157,18 +160,18 @@ def ensure_indexed_once(
 # -----------------------------
 # (Retrieval)
 # -----------------------------
-def search_mmr(
-    query: str,
-    persist_dir: str,
-    collection_name: str,
-    k: int = 4,
-    fetch_k: int = 20,
-    lambda_mult: float = 0.5,
-) -> List[Document]:
-    vs = get_chroma(persist_dir, collection_name)
-    return vs.max_marginal_relevance_search(
-        query,
-        k=k,
-        fetch_k=fetch_k,
-        lambda_mult=lambda_mult,
-    )
+# def search_mmr(
+#     query: str,
+#     persist_dir: str,
+#     collection_name: str,
+#     k: int = 4,
+#     fetch_k: int = 20,
+#     lambda_mult: float = 0.5,
+# ) -> List[Document]:
+#     vs = get_chroma(persist_dir, collection_name)
+#     return vs.max_marginal_relevance_search(
+#         query,
+#         k=k,
+#         fetch_k=fetch_k,
+#         lambda_mult=lambda_mult,
+#     )
