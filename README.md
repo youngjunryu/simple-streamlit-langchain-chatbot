@@ -52,11 +52,27 @@ streamlit run chat.py
 ```
 
 **프로젝트 구조**
-- `chat.py`: Streamlit 애플리케이션 진입점 — 사용자 인터페이스 및 세션 관리
-- `chroma_store.py`: Chroma 벡터 스토어 관련 유틸리티 및 영구화 로직
-- `llm.py`: LLM(예: OpenAI) 래퍼 및 호출 로직
-- `config.py`: 환경 변수와 설정값 정의
-- `requirements.txt`: 필요 패키지 목록
+- [chat.py](chat.py): Streamlit 애플리케이션 진입점 — 사용자 인터페이스 및 세션 관리
+- [chroma_store.py](chroma_store.py): Chroma 벡터 스토어 관련 유틸리티 및 영구화 로직
+- [llm.py](llm.py): LLM(예: OpenAI) 래퍼 및 호출 로직
+- [config.py](config.py): 환경 변수와 설정값 정의
+- [requirements.txt](requirements.txt): 필요 패키지 목록
+- [docs/](docs): 프로젝트 문서용 폴더 — 사용자 매뉴얼, 아키텍처 도면, 연구자료 등 문서
+
+**docs 폴더 안내**
+- 보관 위치: 문서는 [docs/](docs) 폴더에 PDF(.pdf) 형식으로 보관하세요. 예: `user-guide.pdf`, `architecture-overview.pdf`.
+- 색인 타이밍(언제 인덱싱되는가): 색인은 저장된 벡터 DB(영구화 디렉터리)에 데이터가 없을 때 1회 실행됩니다. 구현은 [chroma_store.py](chroma_store.py) 내의 `ensure_indexed_once()`와 `index_pdfs()`를 따릅니다.
+	- 동작 요약:
+		- 저장소에 Chroma의 sqlite 파일(예: [chroma_openai/chroma.sqlite3](chroma_openai/chroma.sqlite3))이나 컬렉션에 이미 문서가 있으면(`is_collection_nonempty()`가 True) 색인을 건너뜁니다.
+		- 컬렉션이 비어있거나 sqlite 파일이 없으면 `index_pdfs()`가 실행되어 [docs/](docs) (기본) 내부의 `**/*.pdf` 패턴에 매칭되는 모든 PDF를 찾아 색인합니다.
+		- PDF는 `PyMuPDF4LLMLoader`로 페이지 단위로 로드되고(`mode="page"`), `MarkdownTextSplitter`로 청킹(chunking)되어 Chroma에 저장됩니다.
+- 기본 동작을 변경하거나 수동 재색인이 필요할 때:
+	- 강제 재색인: 영구화 디렉터리의 `chroma.sqlite3` 파일을 삭제하거나 컬렉션을 비우면 다음 실행에서 다시 색인됩니다.
+	- 수동 색인 호출: `index_pdfs()`를 직접 호출하여 원하는 `pdf_dir`, `persist_dir`, `collection_name`, `chunk_size`, `chunk_overlap` 등을 전달할 수 있습니다. 구현 참고: [chroma_store.py](chroma_store.py).
+- 권장 사항:
+	- PDF 파일명은 목적이 드러나도록 지정하세요(예: `user-guide.pdf`).
+	- 색인 범위(하위 폴더 포함)는 기본 glob(`**/*.pdf`)에 따릅니다. 특정 하위폴더만 색인하려면 glob 패턴을 조정하세요.
+	- 색인 결과를 RAG에서 바로 쓰려면 `persist_dir`(예: [chroma_openai/](chroma_openai))를 애플리케이션에서 사용하도록 설정하세요.
 
 **설정 참고**
 - 로컬에 문서를 임포트하거나 임베딩을 다시 생성하려면 `chroma_store.py`를 참고하세요.
